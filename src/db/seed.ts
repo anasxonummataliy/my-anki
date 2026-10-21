@@ -1,4 +1,4 @@
-import * as Crypto from 'expo-crypto';
+
 
 export interface SeedData {
   decks: {

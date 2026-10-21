@@ -3,7 +3,7 @@ import { ReviewState, ReviewLog } from '@/types/review';
 import { WordWithReview } from '@/types/word';
 import { calculateNextReview } from '@/services/fsrsService';
 import { getAllDescendantDeckIds } from './deckRepository';
-import { Rating, Grade } from 'ts-fsrs';
+import { Grade } from 'ts-fsrs';
 import * as Crypto from 'expo-crypto';
 
 export interface ReviewStateRow {

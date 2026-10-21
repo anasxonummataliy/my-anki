@@ -400,6 +400,9 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     paddingBottom: 16,
+    maxWidth: 720,
+    width: '100%',
+    alignSelf: 'center',
   },
   headerTitle: {
     fontSize: 30,
@@ -409,6 +412,9 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 20,
     paddingTop: 8,
+    maxWidth: 720,
+    width: '100%',
+    alignSelf: 'center',
   },
   profileWrapper: {
     marginBottom: 20,

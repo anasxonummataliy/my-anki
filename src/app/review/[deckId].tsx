@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   View,
   Text,
@@ -17,9 +17,9 @@ import { RatingButtons } from '@/components/flashcard/RatingButtons';
 import { getRatingPreviews } from '@/services/fsrsService';
 import { Button } from '@/components/common/Button';
 import { Card } from '@/components/common/Card';
-import { Rating, Grade } from 'ts-fsrs';
+import { Grade } from 'ts-fsrs';
 import { triggerHaptic } from '@/utils/haptics';
-import { X, Trophy, CheckCircle, ArrowLeft } from 'lucide-react-native';
+import { X, Trophy } from 'lucide-react-native';
 
 export default function ReviewSessionScreen() {
   const { deckId } = useLocalSearchParams<{ deckId: string }>();
@@ -81,6 +81,24 @@ export default function ReviewSessionScreen() {
     ? Math.min(100, Math.round((currentIndex / queue.length) * 100))
     : 0;
 
+  const ratingPreviews = useMemo(() => getRatingPreviews(
+    currentCard
+      ? {
+          wordId: currentCard.id,
+          state: currentCard.state ?? 0,
+          due: currentCard.due ?? 0,
+          stability: currentCard.stability ?? 0,
+          difficulty: currentCard.difficulty ?? 0,
+          elapsedDays: 0,
+          scheduledDays: 0,
+          reps: currentCard.reps ?? 0,
+          lapses: currentCard.lapses ?? 0,
+          lastReview: currentCard.lastReview ?? null,
+        }
+      : null,
+    isDark
+  ), [currentCard, isDark]);
+
   if (loading) {
     return (
       <View style={[styles.centerContainer, { backgroundColor: colors.background }]}>
@@ -133,23 +151,6 @@ export default function ReviewSessionScreen() {
     );
   }
 
-  const ratingPreviews = getRatingPreviews(
-    currentCard
-      ? {
-          wordId: currentCard.id,
-          state: currentCard.state ?? 0,
-          due: currentCard.due ?? Date.now(),
-          stability: currentCard.stability ?? 0,
-          difficulty: currentCard.difficulty ?? 0,
-          elapsedDays: 0,
-          scheduledDays: 0,
-          reps: currentCard.reps ?? 0,
-          lapses: currentCard.lapses ?? 0,
-          lastReview: currentCard.lastReview ?? null,
-        }
-      : null,
-    isDark
-  );
 
   return (
     <View
@@ -246,6 +247,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingBottom: 8,
+    maxWidth: 560,
+    width: '100%',
+    alignSelf: 'center',
   },
   closeBtn: {
     padding: 6,
@@ -268,6 +272,9 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     overflow: 'hidden',
     marginBottom: 8,
+    maxWidth: 520,
+    width: '100%',
+    alignSelf: 'center',
   },
   progressBarFill: {
     height: '100%',
@@ -283,6 +290,9 @@ const styles = StyleSheet.create({
   tapPromptContainer: {
     paddingHorizontal: 20,
     paddingVertical: 12,
+    maxWidth: 520,
+    width: '100%',
+    alignSelf: 'center',
   },
   showAnswerBtn: {
     width: '100%',
@@ -296,6 +306,9 @@ const styles = StyleSheet.create({
     padding: 32,
     borderRadius: 28,
     alignItems: 'center',
+    maxWidth: 480,
+    width: '100%',
+    alignSelf: 'center',
   },
   trophyCircle: {
     width: 80,

@@ -137,7 +137,7 @@ export default function WordDetailScreen() {
                 EXAMPLE SENTENCE
               </Text>
               <Text style={[styles.exampleText, { color: colors.text }]}>
-                "{word.example}"
+                {`"${word.example}"`}
               </Text>
             </View>
           ) : null}

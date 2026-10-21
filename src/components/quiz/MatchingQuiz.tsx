@@ -4,7 +4,6 @@ import { Word } from '@/types/word';
 import { useThemeStore } from '@/store/themeStore';
 import { triggerHaptic } from '@/utils/haptics';
 import { generateMatchingPairs } from '@/services/quizService';
-import { Button } from '../common/Button';
 import { Check } from 'lucide-react-native';
 
 interface MatchingQuizProps {

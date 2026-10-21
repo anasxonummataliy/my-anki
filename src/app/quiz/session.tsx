@@ -220,6 +220,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingBottom: 8,
+    maxWidth: 680,
+    width: '100%',
+    alignSelf: 'center',
   },
   closeBtn: {
     padding: 6,
@@ -239,6 +242,9 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     overflow: 'hidden',
     marginBottom: 12,
+    maxWidth: 680,
+    width: '100%',
+    alignSelf: 'center',
   },
   progressBarFill: {
     height: '100%',
@@ -246,6 +252,9 @@ const styles = StyleSheet.create({
   },
   quizArea: {
     flex: 1,
+    maxWidth: 680,
+    width: '100%',
+    alignSelf: 'center',
   },
   emptyText: {
     textAlign: 'center',

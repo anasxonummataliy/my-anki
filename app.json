@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "my-anki",
+    "name": "My Anki",
     "slug": "my-anki",
     "scheme": "my-anki",
     "version": "1.0.0",
@@ -8,9 +8,20 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.anasxon.myanki",
+      "buildNumber": "1",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "UIRequiredDeviceCapabilities": [
+          "arm64"
+        ]
+      }
     },
     "android": {
+      "package": "com.anasxon.myanki",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -26,7 +37,23 @@
       "expo-router",
       "expo-status-bar",
       "expo-sqlite",
-      "expo-sharing"
-    ]
+      "expo-sharing",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "backgroundColor": "#E6F4FE"
+        }
+      ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "c2610ccb-84af-44da-a51b-2cc195ab607f"
+      }
+    },
+    "owner": "anasxonummataliy"
   }
 }

@@ -21,6 +21,7 @@ import {
   CheckCircle2,
   Plus,
   Play,
+  Sparkles,
 } from 'lucide-react-native';
 
 type FilterTab = 'all' | 'due' | 'new' | 'learned';
@@ -94,11 +95,13 @@ export default function StudyScreen() {
       >
         <Text style={[styles.headerTitle, { color: colors.text }]}>Vocabulary</Text>
         <TouchableOpacity
-          style={styles.filterBtn}
+          style={[styles.quizHeaderBtn, { backgroundColor: colors.primaryLight }]}
           onPress={() => router.push('/quiz/all')}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+          activeOpacity={0.8}
         >
-          <SlidersHorizontal size={22} color={colors.text} />
+          <Sparkles size={16} color={colors.primary} />
+          <Text style={[styles.quizHeaderBtnText, { color: colors.primary }]}>Quiz</Text>
         </TouchableOpacity>
       </View>
 
@@ -276,18 +279,33 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingBottom: 12,
+    maxWidth: 720,
+    width: '100%',
+    alignSelf: 'center',
   },
   headerTitle: {
     fontSize: 30,
     fontWeight: '800',
     letterSpacing: -0.6,
   },
-  filterBtn: {
-    padding: 6,
+  quizHeaderBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 12,
+  },
+  quizHeaderBtnText: {
+    fontSize: 14,
+    fontWeight: '700',
   },
   searchSection: {
     paddingHorizontal: 20,
     marginBottom: 14,
+    maxWidth: 720,
+    width: '100%',
+    alignSelf: 'center',
   },
   searchBar: {
     flexDirection: 'row',
@@ -308,6 +326,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     gap: 10,
     marginBottom: 14,
+    maxWidth: 720,
+    width: '100%',
+    alignSelf: 'center',
   },
   tabPill: {
     paddingHorizontal: 18,
@@ -320,6 +341,9 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: 20,
     gap: 10,
+    maxWidth: 720,
+    width: '100%',
+    alignSelf: 'center',
   },
   wordCard: {
     flexDirection: 'row',

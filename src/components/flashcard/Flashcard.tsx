@@ -4,7 +4,7 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Dimensions,
+  useWindowDimensions,
   ScrollView,
 } from 'react-native';
 import Animated, {
@@ -15,12 +15,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { WordWithReview } from '@/types/word';
 import { useThemeStore } from '@/store/themeStore';
-import { Badge } from '../common/Badge';
 import { triggerHaptic } from '@/utils/haptics';
 import { Volume2, RotateCcw } from 'lucide-react-native';
 
-const { width } = Dimensions.get('window');
-const CARD_WIDTH = width - 40;
 const CARD_HEIGHT = 440;
 
 interface FlashcardProps {
@@ -30,6 +27,8 @@ interface FlashcardProps {
 }
 
 export const Flashcard: React.FC<FlashcardProps> = ({ card, isFlipped, onFlip }) => {
+  const { width } = useWindowDimensions();
+  const cardWidth = Math.min(width - 40, 520);
   const colors = useThemeStore((s) => s.getColors());
   const isDark = useThemeStore((s) => s.isDark());
   const rotateAnim = useSharedValue(0);
@@ -79,7 +78,7 @@ export const Flashcard: React.FC<FlashcardProps> = ({ card, isFlipped, onFlip })
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { width: cardWidth }]}>
       <TouchableOpacity
         activeOpacity={0.95}
         onPress={handleCardPress}
@@ -187,7 +186,7 @@ export const Flashcard: React.FC<FlashcardProps> = ({ card, isFlipped, onFlip })
                   Example
                 </Text>
                 <Text style={[styles.exampleText, { color: colors.text }]}>
-                  "{card.example}"
+                  {`"${card.example}"`}
                 </Text>
               </View>
             ) : null}
@@ -212,7 +211,6 @@ export const Flashcard: React.FC<FlashcardProps> = ({ card, isFlipped, onFlip })
 
 const styles = StyleSheet.create({
   container: {
-    width: CARD_WIDTH,
     height: CARD_HEIGHT,
     alignSelf: 'center',
     marginVertical: 8,

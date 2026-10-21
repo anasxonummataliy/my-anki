@@ -69,6 +69,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     borderBottomWidth: StyleSheet.hairlineWidth,
+    maxWidth: 720,
+    width: '100%',
+    alignSelf: 'center',
   },
   leftContainer: {
     flex: 1,

@@ -220,7 +220,7 @@ export default function StatsScreen() {
                     <Target size={18} color={colors.statBlue} />
                   </View>
                   <Text style={[styles.pillTitle, { color: colors.textSecondary }]}>
-                    Today's Goal
+                    {"Today's Goal"}
                   </Text>
                 </View>
                 <Text style={[styles.pillValue, { color: colors.text }]}>
@@ -492,6 +492,9 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     paddingBottom: 14,
+    maxWidth: 720,
+    width: '100%',
+    alignSelf: 'center',
   },
   headerTitle: {
     fontSize: 30,
@@ -522,6 +525,9 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
+    maxWidth: 720,
+    width: '100%',
+    alignSelf: 'center',
   },
   sectionHeading: {
     fontSize: 16,

@@ -24,6 +24,7 @@ import {
   Layers,
   ChevronRight,
   TrendingUp,
+  Sparkles,
 } from 'lucide-react-native';
 
 export default function HomeScreen() {
@@ -85,7 +86,7 @@ export default function HomeScreen() {
               {getGreeting()}, Anasxon ☀️
             </Text>
             <Text style={[styles.subGreeting, { color: colors.textSecondary }]}>
-              Keep going! You're doing great.
+              {"Keep going! You're doing great."}
             </Text>
           </View>
 
@@ -166,7 +167,7 @@ export default function HomeScreen() {
           <View style={styles.goalHeaderRow}>
             <View>
               <Text style={[styles.goalTitle, { color: colors.text }]}>
-                Today's Goal
+                {"Today's Goal"}
               </Text>
               <Text style={[styles.goalCounter, { color: colors.textSecondary }]}>
                 <Text style={{ fontWeight: '700', color: colors.text }}>
@@ -209,14 +210,31 @@ export default function HomeScreen() {
               </Text>
             </View>
 
-            <TouchableOpacity
-              onPress={() => router.push('/review/all')}
-              style={[styles.startReviewBtn, { backgroundColor: colors.primary }]}
-              activeOpacity={0.8}
-            >
-              <BookOpen size={16} color="#FFFFFF" />
-              <Text style={styles.startReviewBtnText}>Start Review</Text>
-            </TouchableOpacity>
+            <View style={styles.bannerButtonsRow}>
+              <TouchableOpacity
+                onPress={() => router.push('/review/all')}
+                style={[styles.startReviewBtn, { backgroundColor: colors.primary }]}
+                activeOpacity={0.8}
+              >
+                <BookOpen size={15} color="#FFFFFF" />
+                <Text style={styles.startReviewBtnText}>Cards</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => router.push('/quiz/all')}
+                style={[
+                  styles.startQuizBtn,
+                  {
+                    backgroundColor: colors.primaryLight,
+                    borderColor: colors.primary,
+                  },
+                ]}
+                activeOpacity={0.8}
+              >
+                <Sparkles size={15} color={colors.primary} />
+                <Text style={[styles.startQuizBtnText, { color: colors.primary }]}>Quiz</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </Card>
 
@@ -319,6 +337,9 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 20,
+    maxWidth: 720,
+    width: '100%',
+    alignSelf: 'center',
   },
   header: {
     flexDirection: 'row',
@@ -448,17 +469,35 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginTop: 2,
   },
-  startReviewBtn: {
+  bannerButtonsRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
-    paddingHorizontal: 16,
+  },
+  startReviewBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
     paddingVertical: 10,
     borderRadius: 14,
   },
   startReviewBtnText: {
     color: '#FFFFFF',
-    fontSize: 14,
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  startQuizBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 14,
+    borderWidth: 1,
+  },
+  startQuizBtnText: {
+    fontSize: 13,
     fontWeight: '700',
   },
   activityCard: {

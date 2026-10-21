@@ -144,7 +144,7 @@ export async function importBackupFromFile(): Promise<{ success: boolean; messag
   let parsed: any;
   try {
     parsed = JSON.parse(fileContent);
-  } catch (err: any) {
+  } catch (_err: any) {
     return { success: false, message: 'Invalid JSON file: parsing failed' };
   }
 

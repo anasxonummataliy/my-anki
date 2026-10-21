@@ -1,5 +1,5 @@
 import * as SQLite from 'expo-sqlite';
-import { CREATE_TABLES_SQL, SCHEMA_VERSION } from './schema';
+import { CREATE_TABLES_SQL } from './schema';
 import { INITIAL_SEED } from './seed';
 
 const DATABASE_NAME = 'my_anki.db';

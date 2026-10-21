@@ -36,6 +36,7 @@ import {
   Layers,
   ChevronRight,
   FolderTree,
+  Sparkles,
 } from 'lucide-react-native';
 
 const POS_FILTERS: (PartOfSpeech | 'all')[] = [
@@ -175,16 +176,27 @@ export default function DeckDetailScreen() {
         contentContainerStyle={[styles.listContent, { paddingBottom: 40 }]}
         ListHeaderComponent={
           <View style={styles.listHeader}>
-            {/* Quick Actions Row */}
-            <View style={styles.actionButtonsRow}>
-              <Button
-                title={`Study Flashcards (${deck?.dueReviews ?? 0})`}
-                onPress={() => router.push(`/review/${deck?.id}`)}
-                size="md"
-                variant="primary"
-                icon={<BookOpen size={18} color="#FFFFFF" />}
-                style={styles.actionBtn}
-              />
+            {/* Quick Actions */}
+            <View style={styles.actionButtonsContainer}>
+              <View style={styles.actionButtonsRow}>
+                <Button
+                  title={`Flashcards (${deck?.dueReviews ?? 0})`}
+                  onPress={() => router.push(`/review/${deck?.id}`)}
+                  size="md"
+                  variant="primary"
+                  icon={<BookOpen size={18} color="#FFFFFF" />}
+                  style={styles.actionBtn}
+                />
+
+                <Button
+                  title="Quiz Test"
+                  onPress={() => router.push(`/quiz/${deck?.id}`)}
+                  size="md"
+                  variant="outline"
+                  icon={<Sparkles size={18} color={colors.primary} />}
+                  style={styles.actionBtn}
+                />
+              </View>
 
               <Button
                 title="Add Word"
@@ -197,7 +209,7 @@ export default function DeckDetailScreen() {
                 size="md"
                 variant="secondary"
                 icon={<Plus size={18} color={colors.text} />}
-                style={styles.actionBtn}
+                style={styles.addWordBtn}
               />
             </View>
 
@@ -308,7 +320,7 @@ export default function DeckDetailScreen() {
                     style={[styles.exampleText, { color: colors.textSecondary }]}
                     numberOfLines={1}
                   >
-                    "{item.example}"
+                    {`"${item.example}"`}
                   </Text>
                 ) : null}
               </View>
@@ -359,17 +371,26 @@ const styles = StyleSheet.create({
   listContent: {
     paddingHorizontal: 20,
     paddingTop: 8,
+    maxWidth: 720,
+    width: '100%',
+    alignSelf: 'center',
   },
   listHeader: {
     marginBottom: 16,
   },
+  actionButtonsContainer: {
+    gap: 10,
+    marginBottom: 20,
+  },
   actionButtonsRow: {
     flexDirection: 'row',
-    gap: 12,
-    marginBottom: 20,
+    gap: 10,
   },
   actionBtn: {
     flex: 1,
+  },
+  addWordBtn: {
+    width: '100%',
   },
   subdecksSection: {
     marginBottom: 20,

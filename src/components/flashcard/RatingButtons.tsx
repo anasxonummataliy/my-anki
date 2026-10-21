@@ -71,6 +71,9 @@ const styles = StyleSheet.create({
     gap: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
+    maxWidth: 520,
+    width: '100%',
+    alignSelf: 'center',
   },
   button: {
     flex: 1,

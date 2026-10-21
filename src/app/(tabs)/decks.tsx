@@ -97,15 +97,17 @@ export default function DecksScreen() {
           },
         ]}
       >
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Decks</Text>
+        <View style={styles.headerInner}>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Decks</Text>
 
-        <TouchableOpacity
-          onPress={() => router.push('/deck/form')}
-          style={[styles.plusCircleBtn, { backgroundColor: colors.primary }]}
-          activeOpacity={0.8}
-        >
-          <Plus size={22} color="#FFFFFF" />
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => router.push('/deck/form')}
+            style={[styles.plusCircleBtn, { backgroundColor: colors.primary }]}
+            activeOpacity={0.8}
+          >
+            <Plus size={22} color="#FFFFFF" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <ScrollView
@@ -223,12 +225,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  headerInner: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingBottom: 16,
-    borderBottomWidth: StyleSheet.hairlineWidth,
+    maxWidth: 720,
+    width: '100%',
+    alignSelf: 'center',
   },
   headerTitle: {
     fontSize: 28,
@@ -249,6 +256,9 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 20,
+    maxWidth: 720,
+    width: '100%',
+    alignSelf: 'center',
   },
   searchBar: {
     flexDirection: 'row',
