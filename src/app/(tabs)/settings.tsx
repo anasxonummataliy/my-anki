@@ -29,10 +29,12 @@ import {
   Target,
   Check,
 } from 'lucide-react-native';
+import { useResponsive } from '@/utils/responsive';
 
 export default function SettingsScreen() {
   const insets = useSafeAreaInsets();
   const colors = useThemeStore((s) => s.getColors());
+  const { isLargeScreen, contentMaxWidth } = useResponsive();
   const mode = useThemeStore((s) => s.mode);
   const setThemeMode = useThemeStore((s) => s.setThemeMode);
 
@@ -88,15 +90,24 @@ export default function SettingsScreen() {
         style={[
           styles.header,
           {
-            paddingTop: insets.top + 12,
+            paddingTop: insets.top + (isLargeScreen ? 20 : 12),
+            maxWidth: contentMaxWidth,
+            paddingHorizontal: isLargeScreen ? 32 : 20,
           },
         ]}
       >
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Settings</Text>
+        <Text style={[styles.headerTitle, { color: colors.text, fontSize: isLargeScreen ? 36 : 30 }]}>Settings</Text>
       </View>
 
       <ScrollView
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: 40 }]}
+        contentContainerStyle={[
+          styles.scrollContent,
+          {
+            maxWidth: contentMaxWidth,
+            paddingHorizontal: isLargeScreen ? 32 : 20,
+            paddingBottom: isLargeScreen ? 60 : 40,
+          },
+        ]}
         showsVerticalScrollIndicator={false}
       >
         {/* Profile Card */}

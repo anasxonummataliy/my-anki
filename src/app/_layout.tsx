@@ -5,6 +5,12 @@ import { getDb } from '@/db/client';
 import { useThemeStore } from '@/store/themeStore';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import * as SplashScreen from 'expo-splash-screen';
+import { syncAll } from '@/services/syncService';
+
+// Prevent splash screen from auto-hiding before state is ready
+SplashScreen.preventAutoHideAsync().catch(() => {});
+
 export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
   const initTheme = useThemeStore((s) => s.initTheme);
@@ -16,10 +22,13 @@ export default function RootLayout() {
       try {
         await initTheme();
         await getDb();
+        // Quiet background sync on app launch (safely caught)
+        syncAll().catch((e) => console.warn('Background sync failed:', e));
       } catch (err) {
         console.error('Initialization error:', err);
       } finally {
         setIsReady(true);
+        await SplashScreen.hideAsync().catch(() => {});
       }
     }
     prepare();

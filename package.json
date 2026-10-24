@@ -4,6 +4,7 @@
   "main": "expo-router/entry",
   "dependencies": {
     "@hookform/resolvers": "^5.9.1",
+    "@supabase/supabase-js": "^2.118.0",
     "expo": "~57.0.30",
     "expo-constants": "~57.0.22",
     "expo-crypto": "~57.0.4",

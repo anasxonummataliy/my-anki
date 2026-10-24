@@ -38,6 +38,7 @@ import {
   FolderTree,
   Sparkles,
 } from 'lucide-react-native';
+import { useResponsive } from '@/utils/responsive';
 
 const POS_FILTERS: (PartOfSpeech | 'all')[] = [
   'all',
@@ -52,6 +53,7 @@ export default function DeckDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const insets = useSafeAreaInsets();
   const colors = useThemeStore((s) => s.getColors());
+  const { isLargeScreen, contentMaxWidth } = useResponsive();
 
   const [deck, setDeck] = useState<DeckWithStats | null>(null);
   const [words, setWords] = useState<WordWithReview[]>([]);
@@ -173,7 +175,14 @@ export default function DeckDetailScreen() {
         data={words}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[styles.listContent, { paddingBottom: 40 }]}
+        contentContainerStyle={[
+          styles.listContent,
+          {
+            maxWidth: contentMaxWidth,
+            paddingHorizontal: isLargeScreen ? 32 : 20,
+            paddingBottom: isLargeScreen ? 60 : 40,
+          },
+        ]}
         ListHeaderComponent={
           <View style={styles.listHeader}>
             {/* Quick Actions */}

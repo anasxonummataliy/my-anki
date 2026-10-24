@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -16,19 +16,63 @@ import {
   exportBackupToJson,
   importBackupFromFile,
 } from '@/services/backupService';
+import { syncAll, getLastSyncedTime } from '@/services/syncService';
 import { triggerHaptic } from '@/utils/haptics';
 import {
   ChevronLeft,
   UploadCloud,
   FolderDown,
+  RefreshCw,
+  Cloud,
 } from 'lucide-react-native';
 
 export default function BackupScreen() {
   const insets = useSafeAreaInsets();
   const colors = useThemeStore((s) => s.getColors());
 
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncTime, setLastSyncTime] = useState<number | null>(null);
   const [isExporting, setIsExporting] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
+
+  useEffect(() => {
+    async function loadLastSync() {
+      const ts = await getLastSyncedTime();
+      setLastSyncTime(ts);
+    }
+    loadLastSync();
+  }, []);
+
+  const formatLastSync = (ts: number | null) => {
+    if (!ts) return 'Hali qilinmagan';
+    const date = new Date(ts);
+    return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+  };
+
+  const handleCloudSync = async () => {
+    setIsSyncing(true);
+    triggerHaptic('medium');
+    try {
+      const result = await syncAll();
+      if (result.success) {
+        triggerHaptic('success');
+        setLastSyncTime(result.lastSyncedAt || Date.now());
+        Alert.alert(
+          'Sinxronizatsiya yakunlandi',
+          `MacBook va iPhone o'rtasidagi so'zlar sinxronlashtirildi!\n\nYuklangan: ${result.pushedCount ?? 0} ta\nOlingan: ${result.pulledCount ?? 0} ta`
+        );
+      } else {
+        triggerHaptic('error');
+        Alert.alert('Sinxronizatsiya xatosi', result.message);
+      }
+    } catch (err: any) {
+      console.error('Sync error:', err);
+      triggerHaptic('error');
+      Alert.alert('Xatolik', err.message || 'Sinxronizatsiya bajarilmadi.');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   const handleExportBackup = async () => {
     setIsExporting(true);
@@ -99,7 +143,7 @@ export default function BackupScreen() {
           <ChevronLeft size={28} color={colors.text} />
         </TouchableOpacity>
         <Text style={[styles.headerTitle, { color: colors.text }]}>
-          Backup & Restore
+          Backup & Sync
         </Text>
         <View style={{ width: 28 }} />
       </View>
@@ -108,6 +152,41 @@ export default function BackupScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* Supabase Cloud Sync Card */}
+        <Card variant="elevated" style={[styles.backupCard, { borderColor: colors.primary + '30', borderWidth: 1 }]}>
+          <View style={styles.cardHeader}>
+            <View style={[styles.iconBox, { backgroundColor: '#EEF2FF' }]}>
+              <Cloud size={24} color="#4F46E5" />
+            </View>
+            <View style={styles.textColumn}>
+              <View style={styles.statusRow}>
+                <Text style={[styles.cardTitle, { color: colors.text }]}>
+                  Supabase Cloud Sync
+                </Text>
+                <View style={[styles.badge, { backgroundColor: '#DCFCE7' }]}>
+                  <Text style={[styles.badgeText, { color: '#166534' }]}>Ulangan</Text>
+                </View>
+              </View>
+              <Text style={[styles.cardDescription, { color: colors.textSecondary }]}>
+                {"MacBook va iPhone o'rtasida so'zlarni avtomatik sinxronlash."}
+              </Text>
+              <Text style={[styles.syncStatusText, { color: colors.textSecondary }]}>
+                Oxirgi sinxronizatsiya: {formatLastSync(lastSyncTime)}
+              </Text>
+            </View>
+          </View>
+
+          <Button
+            title={isSyncing ? 'Sinxronlashtirilmoqda...' : 'Hozir Sinxronlash'}
+            onPress={handleCloudSync}
+            loading={isSyncing}
+            variant="primary"
+            size="lg"
+            icon={<RefreshCw size={18} color="#FFFFFF" />}
+            style={styles.actionBtn}
+          />
+        </Card>
+
         {/* Export Backup Card */}
         <Card variant="elevated" style={styles.backupCard}>
           <View style={styles.cardHeader}>
@@ -116,10 +195,10 @@ export default function BackupScreen() {
             </View>
             <View style={styles.textColumn}>
               <Text style={[styles.cardTitle, { color: colors.text }]}>
-                Export Backup
+                Export Backup (JSON)
               </Text>
               <Text style={[styles.cardDescription, { color: colors.textSecondary }]}>
-                Save your data as a .JSON file to keep your vocabulary safe.
+                {"Barcha so'z va ma'lumotlarni offline fayl (.json) sifatida saqlab olish."}
               </Text>
             </View>
           </View>
@@ -128,7 +207,7 @@ export default function BackupScreen() {
             title="Export to Files"
             onPress={handleExportBackup}
             loading={isExporting}
-            variant="primary"
+            variant="secondary"
             size="lg"
             style={styles.actionBtn}
           />
@@ -145,7 +224,7 @@ export default function BackupScreen() {
                 Import Backup
               </Text>
               <Text style={[styles.cardDescription, { color: colors.textSecondary }]}>
-                Restore your data from a backup file.
+                {"Zaxira fayldan barcha lug'atlarni qayta yuklash."}
               </Text>
             </View>
           </View>
@@ -162,7 +241,7 @@ export default function BackupScreen() {
 
         {/* Bottom Note */}
         <Text style={[styles.bottomNote, { color: colors.textSecondary }]}>
-          Backup includes: vocabulary, decks, review schedules, history and settings.
+          {"Local-first xavfsizlik: Barcha ma'lumotlar qurilmangizning o'zida ham offline saqlanadi."}
         </Text>
       </ScrollView>
     </View>
@@ -214,14 +293,33 @@ const styles = StyleSheet.create({
   textColumn: {
     flex: 1,
   },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 4,
+  },
+  badge: {
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 8,
+  },
+  badgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
   cardTitle: {
     fontSize: 18,
     fontWeight: '700',
-    marginBottom: 4,
   },
   cardDescription: {
     fontSize: 14,
     lineHeight: 20,
+  },
+  syncStatusText: {
+    fontSize: 12,
+    marginTop: 6,
+    fontWeight: '500',
   },
   actionBtn: {
     width: '100%',
@@ -231,7 +329,7 @@ const styles = StyleSheet.create({
   bottomNote: {
     fontSize: 13,
     textAlign: 'center',
-    marginTop: 20,
+    marginTop: 10,
     lineHeight: 18,
     paddingHorizontal: 24,
   },

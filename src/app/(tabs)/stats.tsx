@@ -25,6 +25,7 @@ import {
   Activity,
   Zap,
 } from 'lucide-react-native';
+import { useResponsive } from '@/utils/responsive';
 
 interface RatingBreakdown {
   again: number;
@@ -39,6 +40,7 @@ type TabType = 'Overview' | 'Learning' | 'Quiz';
 export default function StatsScreen() {
   const insets = useSafeAreaInsets();
   const colors = useThemeStore((s) => s.getColors());
+  const { isLargeScreen, contentMaxWidth } = useResponsive();
   const [activeTab, setActiveTab] = useState<TabType>('Overview');
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [ratings, setRatings] = useState<RatingBreakdown>({
@@ -116,14 +118,16 @@ export default function StatsScreen() {
         style={[
           styles.header,
           {
-            paddingTop: insets.top + 12,
+            paddingTop: insets.top + (isLargeScreen ? 20 : 12),
+            maxWidth: contentMaxWidth,
+            paddingHorizontal: isLargeScreen ? 32 : 20,
           },
         ]}
       >
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Statistics</Text>
+        <Text style={[styles.headerTitle, { color: colors.text, fontSize: isLargeScreen ? 36 : 30 }]}>Statistics</Text>
 
         {/* Segmented Control Tabs */}
-        <View style={[styles.tabBar, { backgroundColor: colors.surface }]}>
+        <View style={[styles.tabBar, { backgroundColor: colors.surface, padding: isLargeScreen ? 6 : 4, borderRadius: isLargeScreen ? 16 : 14 }]}>
           {(['Overview', 'Learning', 'Quiz'] as TabType[]).map((tab) => {
             const isSelected = activeTab === tab;
             return (
@@ -135,6 +139,7 @@ export default function StatsScreen() {
                 }}
                 style={[
                   styles.tabItem,
+                  { paddingVertical: isLargeScreen ? 11 : 8 },
                   isSelected && [
                     styles.tabItemActive,
                     { backgroundColor: colors.card, shadowColor: '#000' },
@@ -148,6 +153,7 @@ export default function StatsScreen() {
                     {
                       color: isSelected ? colors.text : colors.textSecondary,
                       fontWeight: isSelected ? '700' : '500',
+                      fontSize: isLargeScreen ? 15 : 14,
                     },
                   ]}
                 >
@@ -160,7 +166,14 @@ export default function StatsScreen() {
       </View>
 
       <ScrollView
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: 40 }]}
+        contentContainerStyle={[
+          styles.scrollContent,
+          {
+            maxWidth: contentMaxWidth,
+            paddingHorizontal: isLargeScreen ? 32 : 20,
+            paddingBottom: isLargeScreen ? 60 : 40,
+          },
+        ]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl

@@ -17,19 +17,19 @@ import { DeckWithStats } from '@/types/deck';
 import { Card } from '@/components/common/Card';
 import { EmptyState } from '@/components/common/EmptyState';
 import { triggerHaptic } from '@/utils/haptics';
+import { useResponsive } from '@/utils/responsive';
 import {
   Plus,
   Layers,
   ChevronRight,
   Search,
-  BookOpen,
-  Trash2,
-  FolderTree,
 } from 'lucide-react-native';
 
 export default function DecksScreen() {
   const insets = useSafeAreaInsets();
   const colors = useThemeStore((s) => s.getColors());
+  const { isLargeScreen, contentMaxWidth } = useResponsive();
+
   const [decks, setDecks] = useState<DeckWithStats[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
@@ -92,46 +92,75 @@ export default function DecksScreen() {
         style={[
           styles.header,
           {
-            paddingTop: insets.top + 12,
+            paddingTop: insets.top + (isLargeScreen ? 20 : 12),
             borderBottomColor: colors.borderLight,
           },
         ]}
       >
-        <View style={styles.headerInner}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Decks</Text>
+        <View style={[styles.headerInner, { maxWidth: contentMaxWidth, paddingHorizontal: isLargeScreen ? 32 : 20 }]}>
+          <Text style={[styles.headerTitle, { color: colors.text, fontSize: isLargeScreen ? 36 : 28 }]}>
+            Decks
+          </Text>
 
           <TouchableOpacity
             onPress={() => router.push('/deck/form')}
-            style={[styles.plusCircleBtn, { backgroundColor: colors.primary }]}
+            style={[
+              styles.plusCircleBtn,
+              {
+                backgroundColor: colors.primary,
+                width: isLargeScreen ? 48 : 40,
+                height: isLargeScreen ? 48 : 40,
+                borderRadius: isLargeScreen ? 24 : 20,
+              },
+            ]}
             activeOpacity={0.8}
           >
-            <Plus size={22} color="#FFFFFF" />
+            <Plus size={isLargeScreen ? 26 : 22} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
       </View>
 
       <ScrollView
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: 40 }]}
+        contentContainerStyle={[
+          styles.scrollContent,
+          {
+            maxWidth: contentMaxWidth,
+            padding: isLargeScreen ? 32 : 20,
+            paddingBottom: isLargeScreen ? 60 : 40,
+          },
+        ]}
         showsVerticalScrollIndicator={false}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
         }
       >
-        {/* Search Bar matching reference image */}
-        <View style={[styles.searchBar, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Search size={18} color={colors.textMuted} />
+        {/* Search Bar */}
+        <View
+          style={[
+            styles.searchBar,
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.border,
+              height: isLargeScreen ? 56 : 46,
+              borderRadius: isLargeScreen ? 16 : 14,
+              paddingHorizontal: isLargeScreen ? 18 : 14,
+              marginBottom: isLargeScreen ? 26 : 20,
+            },
+          ]}
+        >
+          <Search size={isLargeScreen ? 22 : 18} color={colors.textMuted} />
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder="Search decks..."
             placeholderTextColor={colors.textMuted}
-            style={[styles.searchInput, { color: colors.text }]}
+            style={[styles.searchInput, { color: colors.text, fontSize: isLargeScreen ? 17 : 15 }]}
           />
         </View>
 
         {filteredDecks.length === 0 ? (
           <EmptyState
-            icon={<Layers size={48} color={colors.textMuted} />}
+            icon={<Layers size={isLargeScreen ? 64 : 48} color={colors.textMuted} />}
             title="No Decks Found"
             description="Create your first deck to organize your vocabulary by units and topics."
             actionTitle="New Deck"
@@ -142,27 +171,36 @@ export default function DecksScreen() {
             const hasSubdecks = deck.subdecks && deck.subdecks.length > 0;
 
             return (
-              <View key={deck.id} style={styles.deckGroup}>
+              <View key={deck.id} style={[styles.deckGroup, { marginBottom: isLargeScreen ? 20 : 14 }]}>
                 {/* Main Deck Container Card */}
-                <Card variant="elevated" style={styles.deckCard}>
+                <Card variant="elevated" style={[styles.deckCard, { borderRadius: isLargeScreen ? 24 : 20 }]}>
                   {/* Top Deck Title Header */}
                   <TouchableOpacity
                     onPress={() => router.push(`/deck/${deck.id}`)}
                     activeOpacity={0.7}
-                    style={styles.deckHeaderRow}
+                    style={[styles.deckHeaderRow, { padding: isLargeScreen ? 24 : 18 }]}
                   >
                     <View style={styles.deckHeaderLeft}>
                       <View
                         style={[
                           styles.verticalBar,
-                          { backgroundColor: deck.color || colors.primary },
+                          {
+                            backgroundColor: deck.color || colors.primary,
+                            width: isLargeScreen ? 6 : 4,
+                            height: isLargeScreen ? 48 : 38,
+                          },
                         ]}
                       />
                       <View style={styles.deckTitleBox}>
-                        <Text style={[styles.deckName, { color: colors.text }]}>
+                        <Text style={[styles.deckName, { color: colors.text, fontSize: isLargeScreen ? 21 : 17 }]}>
                           {deck.name}
                         </Text>
-                        <Text style={[styles.deckWordsCount, { color: colors.textSecondary }]}>
+                        <Text
+                          style={[
+                            styles.deckWordsCount,
+                            { color: colors.textSecondary, fontSize: isLargeScreen ? 15 : 13 },
+                          ]}
+                        >
                           {deck.totalWords.toLocaleString()} words
                         </Text>
                       </View>
@@ -170,17 +208,30 @@ export default function DecksScreen() {
 
                     <View style={styles.deckHeaderRight}>
                       {!hasSubdecks && (
-                        <Text style={[styles.dueTextHighlight, { color: colors.primary }]}>
+                        <Text
+                          style={[
+                            styles.dueTextHighlight,
+                            { color: colors.primary, fontSize: isLargeScreen ? 15 : 13 },
+                          ]}
+                        >
                           {deck.dueReviews} due
                         </Text>
                       )}
-                      <ChevronRight size={18} color={colors.textMuted} />
+                      <ChevronRight size={isLargeScreen ? 22 : 18} color={colors.textMuted} />
                     </View>
                   </TouchableOpacity>
 
-                  {/* Nested Subdecks List (matching reference image) */}
+                  {/* Nested Subdecks List */}
                   {hasSubdecks && (
-                    <View style={[styles.subdecksList, { borderTopColor: colors.borderLight }]}>
+                    <View
+                      style={[
+                        styles.subdecksList,
+                        {
+                          borderTopColor: colors.borderLight,
+                          paddingLeft: isLargeScreen ? 48 : 36,
+                        },
+                      ]}
+                    >
                       {deck.subdecks!.map((sub, index) => (
                         <TouchableOpacity
                           key={sub.id}
@@ -188,23 +239,42 @@ export default function DecksScreen() {
                           activeOpacity={0.7}
                           style={[
                             styles.subdeckRow,
+                            {
+                              paddingVertical: isLargeScreen ? 18 : 14,
+                              paddingRight: isLargeScreen ? 24 : 18,
+                            },
                             index > 0 && { borderTopColor: colors.borderLight, borderTopWidth: 1 },
                           ]}
                         >
                           <View style={styles.subdeckLeft}>
-                            <Text style={[styles.subdeckName, { color: colors.text }]}>
+                            <Text
+                              style={[
+                                styles.subdeckName,
+                                { color: colors.text, fontSize: isLargeScreen ? 17 : 15 },
+                              ]}
+                            >
                               {sub.name}
                             </Text>
-                            <Text style={[styles.subdeckWords, { color: colors.textSecondary }]}>
+                            <Text
+                              style={[
+                                styles.subdeckWords,
+                                { color: colors.textSecondary, fontSize: isLargeScreen ? 14 : 12 },
+                              ]}
+                            >
                               {sub.totalWords} words
                             </Text>
                           </View>
 
                           <View style={styles.subdeckRight}>
-                            <Text style={[styles.dueTextHighlight, { color: colors.primary }]}>
+                            <Text
+                              style={[
+                                styles.dueTextHighlight,
+                                { color: colors.primary, fontSize: isLargeScreen ? 15 : 13 },
+                              ]}
+                            >
                               {sub.dueReviews} due
                             </Text>
-                            <ChevronRight size={16} color={colors.textMuted} />
+                            <ChevronRight size={isLargeScreen ? 20 : 16} color={colors.textMuted} />
                           </View>
                         </TouchableOpacity>
                       ))}
@@ -231,21 +301,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
     paddingBottom: 16,
-    maxWidth: 720,
     width: '100%',
     alignSelf: 'center',
   },
   headerTitle: {
-    fontSize: 28,
     fontWeight: '800',
     letterSpacing: -0.5,
   },
   plusCircleBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#FF5E1E',
@@ -255,95 +319,76 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   scrollContent: {
-    padding: 20,
-    maxWidth: 720,
     width: '100%',
     alignSelf: 'center',
   },
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 14,
-    height: 46,
-    borderRadius: 14,
     borderWidth: 1,
-    marginBottom: 20,
-    gap: 10,
+    gap: 12,
   },
   searchInput: {
     flex: 1,
-    fontSize: 15,
     height: '100%',
   },
-  deckGroup: {
-    marginBottom: 14,
-  },
+  deckGroup: {},
   deckCard: {
     padding: 0,
-    borderRadius: 20,
     overflow: 'hidden',
   },
   deckHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 18,
   },
   deckHeaderLeft: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 14,
+    gap: 16,
     flex: 1,
   },
   verticalBar: {
-    width: 4,
-    height: 38,
-    borderRadius: 2,
+    borderRadius: 3,
   },
   deckTitleBox: {
     flex: 1,
   },
   deckName: {
-    fontSize: 17,
     fontWeight: '700',
-    marginBottom: 2,
+    marginBottom: 3,
   },
   deckWordsCount: {
-    fontSize: 13,
+    fontWeight: '500',
   },
   deckHeaderRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
   },
   dueTextHighlight: {
-    fontSize: 13,
     fontWeight: '700',
   },
   subdecksList: {
     borderTopWidth: 1,
-    paddingLeft: 36,
   },
   subdeckRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 14,
-    paddingRight: 18,
   },
   subdeckLeft: {
-    gap: 2,
+    gap: 3,
   },
   subdeckName: {
-    fontSize: 15,
     fontWeight: '600',
   },
   subdeckWords: {
-    fontSize: 12,
+    fontWeight: '500',
   },
   subdeckRight: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 10,
   },
 });

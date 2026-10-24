@@ -23,12 +23,14 @@ import {
   Play,
   Sparkles,
 } from 'lucide-react-native';
+import { useResponsive } from '@/utils/responsive';
 
 type FilterTab = 'all' | 'due' | 'new' | 'learned';
 
 export default function StudyScreen() {
   const insets = useSafeAreaInsets();
   const colors = useThemeStore((s) => s.getColors());
+  const { isLargeScreen, contentMaxWidth } = useResponsive();
 
   const [activeTab, setActiveTab] = useState<FilterTab>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -89,46 +91,58 @@ export default function StudyScreen() {
         style={[
           styles.headerRow,
           {
-            paddingTop: insets.top + 8,
+            paddingTop: insets.top + (isLargeScreen ? 20 : 8),
+            maxWidth: contentMaxWidth,
+            paddingHorizontal: isLargeScreen ? 32 : 20,
           },
         ]}
       >
-        <Text style={[styles.headerTitle, { color: colors.text }]}>Vocabulary</Text>
+        <Text style={[styles.headerTitle, { color: colors.text, fontSize: isLargeScreen ? 36 : 30 }]}>Vocabulary</Text>
         <TouchableOpacity
-          style={[styles.quizHeaderBtn, { backgroundColor: colors.primaryLight }]}
+          style={[
+            styles.quizHeaderBtn,
+            {
+              backgroundColor: colors.primaryLight,
+              paddingHorizontal: isLargeScreen ? 16 : 12,
+              paddingVertical: isLargeScreen ? 10 : 7,
+            },
+          ]}
           onPress={() => router.push('/quiz/all')}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
           activeOpacity={0.8}
         >
-          <Sparkles size={16} color={colors.primary} />
-          <Text style={[styles.quizHeaderBtnText, { color: colors.primary }]}>Quiz</Text>
+          <Sparkles size={isLargeScreen ? 18 : 16} color={colors.primary} />
+          <Text style={[styles.quizHeaderBtnText, { color: colors.primary, fontSize: isLargeScreen ? 15 : 14 }]}>Quiz</Text>
         </TouchableOpacity>
       </View>
 
       {/* Search Input */}
-      <View style={styles.searchSection}>
+      <View style={[styles.searchSection, { maxWidth: contentMaxWidth, paddingHorizontal: isLargeScreen ? 32 : 20, marginBottom: isLargeScreen ? 20 : 14 }]}>
         <View
           style={[
             styles.searchBar,
             {
               backgroundColor: colors.surface,
               borderColor: colors.borderLight,
+              height: isLargeScreen ? 54 : 48,
+              borderRadius: isLargeScreen ? 16 : 16,
+              paddingHorizontal: isLargeScreen ? 18 : 14,
             },
           ]}
         >
-          <Search size={18} color={colors.textSecondary} />
+          <Search size={isLargeScreen ? 22 : 18} color={colors.textSecondary} />
           <TextInput
             value={searchQuery}
             onChangeText={setSearchQuery}
             placeholder="Search words..."
             placeholderTextColor={colors.textSecondary}
-            style={[styles.searchInput, { color: colors.text }]}
+            style={[styles.searchInput, { color: colors.text, fontSize: isLargeScreen ? 17 : 15 }]}
           />
         </View>
       </View>
 
       {/* Filter Tabs Row */}
-      <View style={styles.tabsRow}>
+      <View style={[styles.tabsRow, { maxWidth: contentMaxWidth, paddingHorizontal: isLargeScreen ? 32 : 20, marginBottom: isLargeScreen ? 20 : 14 }]}>
         {(['all', 'due', 'new', 'learned'] as FilterTab[]).map((tab) => {
           const isSelected = activeTab === tab;
           const label =
@@ -151,6 +165,8 @@ export default function StudyScreen() {
                 styles.tabPill,
                 {
                   backgroundColor: isSelected ? colors.primary : colors.surface,
+                  paddingHorizontal: isLargeScreen ? 22 : 18,
+                  paddingVertical: isLargeScreen ? 10 : 8,
                 },
               ]}
               activeOpacity={0.8}
@@ -161,6 +177,7 @@ export default function StudyScreen() {
                   {
                     color: isSelected ? '#FFFFFF' : colors.textSecondary,
                     fontWeight: isSelected ? '700' : '600',
+                    fontSize: isLargeScreen ? 15 : 14,
                   },
                 ]}
               >
@@ -175,6 +192,14 @@ export default function StudyScreen() {
       <FlatList
         data={words}
         keyExtractor={(item) => item.id}
+        contentContainerStyle={[
+          styles.listContent,
+          {
+            maxWidth: contentMaxWidth,
+            paddingHorizontal: isLargeScreen ? 32 : 20,
+            paddingBottom: insets.bottom + (isLargeScreen ? 60 : 40),
+          },
+        ]}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}
@@ -183,10 +208,6 @@ export default function StudyScreen() {
           />
         }
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[
-          styles.listContent,
-          { paddingBottom: insets.bottom + 90 },
-        ]}
         renderItem={({ item }) => {
           const badge = getPosBadgeColor(item.partOfSpeech);
           const isLearned = (item.reps ?? 0) >= 2 || item.state === 2;

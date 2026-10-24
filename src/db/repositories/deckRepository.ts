@@ -1,6 +1,7 @@
 import { getDb } from '../client';
 import { Deck, DeckWithStats, DeckCounts } from '@/types/deck';
 import * as Crypto from 'expo-crypto';
+import { syncDeckToRemote, deleteDeckFromRemote } from '@/services/syncService';
 
 export interface DeckRow {
   id: string;
@@ -193,7 +194,7 @@ export async function createDeck(deck: {
     ]
   );
 
-  return {
+  const createdDeck: Deck = {
     id,
     name: deck.name.trim(),
     description: deck.description?.trim() || null,
@@ -202,6 +203,18 @@ export async function createDeck(deck: {
     createdAt: now,
     updatedAt: now,
   };
+
+  void syncDeckToRemote({
+    id,
+    name: createdDeck.name,
+    description: createdDeck.description,
+    parent_id: createdDeck.parentId,
+    color: createdDeck.color,
+    created_at: now,
+    updated_at: now,
+  });
+
+  return createdDeck;
 }
 
 export async function updateDeck(deck: {
@@ -227,10 +240,21 @@ export async function updateDeck(deck: {
       deck.id,
     ]
   );
+
+  void syncDeckToRemote({
+    id: deck.id,
+    name: deck.name.trim(),
+    description: deck.description?.trim() || null,
+    parent_id: deck.parentId || null,
+    color: deck.color || null,
+    created_at: now,
+    updated_at: now,
+  });
 }
 
 export async function deleteDeck(id: string): Promise<void> {
   const db = await getDb();
   // Deleting deck will cascade to child decks, words, review states, logs via foreign keys
   await db.runAsync(`DELETE FROM decks WHERE id = ?;`, [id]);
+  void deleteDeckFromRemote(id);
 }

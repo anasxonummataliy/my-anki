@@ -26,10 +26,12 @@ import {
   TrendingUp,
   Sparkles,
 } from 'lucide-react-native';
+import { useResponsive } from '@/utils/responsive';
 
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const colors = useThemeStore((s) => s.getColors());
+  const { isLargeScreen, contentMaxWidth } = useResponsive();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [decks, setDecks] = useState<DeckWithStats[]>([]);
   const [refreshing, setRefreshing] = useState(false);
@@ -72,7 +74,12 @@ export default function HomeScreen() {
       <ScrollView
         contentContainerStyle={[
           styles.scrollContent,
-          { paddingTop: insets.top + 16, paddingBottom: 36 },
+          {
+            maxWidth: contentMaxWidth,
+            paddingHorizontal: isLargeScreen ? 32 : 20,
+            paddingTop: insets.top + (isLargeScreen ? 24 : 16),
+            paddingBottom: isLargeScreen ? 60 : 36,
+          },
         ]}
         showsVerticalScrollIndicator={false}
         refreshControl={
@@ -80,83 +87,135 @@ export default function HomeScreen() {
         }
       >
         {/* Header with Greeting & Avatar */}
-        <View style={styles.header}>
+        <View style={[styles.header, { marginBottom: isLargeScreen ? 28 : 20 }]}>
           <View style={styles.headerTextContainer}>
-            <Text style={[styles.greeting, { color: colors.text }]}>
+            <Text style={[styles.greeting, { color: colors.text, fontSize: isLargeScreen ? 32 : 22 }]}>
               {getGreeting()}, Anasxon ☀️
             </Text>
-            <Text style={[styles.subGreeting, { color: colors.textSecondary }]}>
+            <Text style={[styles.subGreeting, { color: colors.textSecondary, fontSize: isLargeScreen ? 16 : 13 }]}>
               {"Keep going! You're doing great."}
             </Text>
           </View>
 
           <TouchableOpacity
             onPress={() => router.push('/(tabs)/settings')}
-            style={[styles.avatarCircle, { backgroundColor: colors.primary }]}
+            style={[
+              styles.avatarCircle,
+              {
+                backgroundColor: colors.primary,
+                width: isLargeScreen ? 52 : 44,
+                height: isLargeScreen ? 52 : 44,
+                borderRadius: isLargeScreen ? 26 : 22,
+              },
+            ]}
             activeOpacity={0.8}
           >
-            <Text style={styles.avatarLetter}>A</Text>
+            <Text style={[styles.avatarLetter, { fontSize: isLargeScreen ? 22 : 18 }]}>A</Text>
           </TouchableOpacity>
         </View>
 
-        {/* 2x2 Colorful Stat Cards Grid (from reference design) */}
-        <View style={styles.metricsGrid}>
+        {/* 2x2 on mobile, 4-in-a-row on desktop */}
+        <View style={[styles.metricsGrid, { gap: isLargeScreen ? 16 : 12, marginBottom: isLargeScreen ? 24 : 16 }]}>
           {/* 1. Total Words (Cyan / Blue tint) */}
-          <View style={[styles.metricCard, { backgroundColor: colors.statBlueBg, borderColor: colors.borderLight }]}>
+          <View
+            style={[
+              styles.metricCard,
+              {
+                backgroundColor: colors.statBlueBg,
+                borderColor: colors.borderLight,
+                width: isLargeScreen ? '23.5%' : '48%',
+                padding: isLargeScreen ? 20 : 16,
+                borderRadius: isLargeScreen ? 22 : 18,
+              },
+            ]}
+          >
             <View style={styles.metricTopRow}>
               <View style={[styles.miniIconCircle, { backgroundColor: '#E0F2FE' }]}>
-                <Layers size={16} color={colors.statBlue} />
+                <Layers size={isLargeScreen ? 20 : 16} color={colors.statBlue} />
               </View>
-              <Text style={[styles.metricTitle, { color: colors.textSecondary }]}>
+              <Text style={[styles.metricTitle, { color: colors.textSecondary, fontSize: isLargeScreen ? 15 : 13 }]}>
                 Total Words
               </Text>
             </View>
-            <Text style={[styles.metricNumber, { color: colors.statBlue }]}>
+            <Text style={[styles.metricNumber, { color: colors.statBlue, fontSize: isLargeScreen ? 32 : 26 }]}>
               {stats?.totalWords ?? 0}
             </Text>
           </View>
 
           {/* 2. Learned (Emerald Green tint) */}
-          <View style={[styles.metricCard, { backgroundColor: colors.statGreenBg, borderColor: colors.borderLight }]}>
+          <View
+            style={[
+              styles.metricCard,
+              {
+                backgroundColor: colors.statGreenBg,
+                borderColor: colors.borderLight,
+                width: isLargeScreen ? '23.5%' : '48%',
+                padding: isLargeScreen ? 20 : 16,
+                borderRadius: isLargeScreen ? 22 : 18,
+              },
+            ]}
+          >
             <View style={styles.metricTopRow}>
               <View style={[styles.miniIconCircle, { backgroundColor: '#D1FAE5' }]}>
-                <CheckCircle2 size={16} color={colors.statGreen} />
+                <CheckCircle2 size={isLargeScreen ? 20 : 16} color={colors.statGreen} />
               </View>
-              <Text style={[styles.metricTitle, { color: colors.textSecondary }]}>
+              <Text style={[styles.metricTitle, { color: colors.textSecondary, fontSize: isLargeScreen ? 15 : 13 }]}>
                 Learned
               </Text>
             </View>
-            <Text style={[styles.metricNumber, { color: colors.statGreen }]}>
+            <Text style={[styles.metricNumber, { color: colors.statGreen, fontSize: isLargeScreen ? 32 : 26 }]}>
               {stats?.wordsLearned ?? 0}
             </Text>
           </View>
 
           {/* 3. Due Today (Warm Amber tint) */}
-          <View style={[styles.metricCard, { backgroundColor: colors.statOrangeBg, borderColor: colors.borderLight }]}>
+          <View
+            style={[
+              styles.metricCard,
+              {
+                backgroundColor: colors.statOrangeBg,
+                borderColor: colors.borderLight,
+                width: isLargeScreen ? '23.5%' : '48%',
+                padding: isLargeScreen ? 20 : 16,
+                borderRadius: isLargeScreen ? 22 : 18,
+              },
+            ]}
+          >
             <View style={styles.metricTopRow}>
               <View style={[styles.miniIconCircle, { backgroundColor: '#FEF3C7' }]}>
-                <Clock size={16} color={colors.statOrange} />
+                <Clock size={isLargeScreen ? 20 : 16} color={colors.statOrange} />
               </View>
-              <Text style={[styles.metricTitle, { color: colors.textSecondary }]}>
+              <Text style={[styles.metricTitle, { color: colors.textSecondary, fontSize: isLargeScreen ? 15 : 13 }]}>
                 Due Today
               </Text>
             </View>
-            <Text style={[styles.metricNumber, { color: colors.statOrange }]}>
+            <Text style={[styles.metricNumber, { color: colors.statOrange, fontSize: isLargeScreen ? 32 : 26 }]}>
               {stats?.wordsDueToday ?? 0}
             </Text>
           </View>
 
           {/* 4. Streak (Flame Orange tint - Olov rang) */}
-          <View style={[styles.metricCard, { backgroundColor: colors.statFlameBg, borderColor: colors.borderLight }]}>
+          <View
+            style={[
+              styles.metricCard,
+              {
+                backgroundColor: colors.statFlameBg,
+                borderColor: colors.borderLight,
+                width: isLargeScreen ? '23.5%' : '48%',
+                padding: isLargeScreen ? 20 : 16,
+                borderRadius: isLargeScreen ? 22 : 18,
+              },
+            ]}
+          >
             <View style={styles.metricTopRow}>
               <View style={[styles.miniIconCircle, { backgroundColor: '#FFEDD5' }]}>
-                <Flame size={16} color={colors.primary} fill={colors.primary} />
+                <Flame size={isLargeScreen ? 20 : 16} color={colors.primary} fill={colors.primary} />
               </View>
-              <Text style={[styles.metricTitle, { color: colors.textSecondary }]}>
+              <Text style={[styles.metricTitle, { color: colors.textSecondary, fontSize: isLargeScreen ? 15 : 13 }]}>
                 Streak
               </Text>
             </View>
-            <Text style={[styles.metricNumber, { color: colors.primary }]}>
+            <Text style={[styles.metricNumber, { color: colors.primary, fontSize: isLargeScreen ? 32 : 26 }]}>
               {stats?.currentStreak ?? 0} days
             </Text>
           </View>

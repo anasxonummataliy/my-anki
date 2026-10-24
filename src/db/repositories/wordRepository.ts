@@ -1,6 +1,7 @@
 import { getDb } from '../client';
 import { Word, WordWithReview, WordFilterOptions } from '@/types/word';
 import * as Crypto from 'expo-crypto';
+import { syncWordToRemote, deleteWordFromRemote } from '@/services/syncService';
 
 export interface WordRow {
   id: string;
@@ -160,7 +161,7 @@ export async function createWord(data: {
     );
   });
 
-  return {
+  const createdWord: Word = {
     id,
     deckId: data.deckId,
     word: data.word.trim(),
@@ -172,6 +173,21 @@ export async function createWord(data: {
     createdAt: now,
     updatedAt: now,
   };
+
+  void syncWordToRemote({
+    id,
+    deck_id: createdWord.deckId,
+    word: createdWord.word,
+    translation: createdWord.translation,
+    definition: createdWord.definition,
+    example: createdWord.example,
+    part_of_speech: createdWord.partOfSpeech,
+    notes: createdWord.notes,
+    created_at: now,
+    updated_at: now,
+  });
+
+  return createdWord;
 }
 
 export async function updateWord(data: {
@@ -186,6 +202,15 @@ export async function updateWord(data: {
 }): Promise<void> {
   const db = await getDb();
   const now = Date.now();
+
+  let finalDeckId = data.deckId;
+  if (!finalDeckId) {
+    const existing = await db.getFirstAsync<{ deck_id: string }>(
+      'SELECT deck_id FROM words WHERE id = ?;',
+      [data.id]
+    );
+    finalDeckId = existing?.deck_id || '';
+  }
 
   if (data.deckId) {
     await db.runAsync(
@@ -221,11 +246,27 @@ export async function updateWord(data: {
       ]
     );
   }
+
+  if (finalDeckId) {
+    void syncWordToRemote({
+      id: data.id,
+      deck_id: finalDeckId,
+      word: data.word.trim(),
+      translation: data.translation.trim(),
+      definition: data.definition?.trim() || null,
+      example: data.example?.trim() || null,
+      part_of_speech: data.partOfSpeech?.trim() || null,
+      notes: data.notes?.trim() || null,
+      created_at: now,
+      updated_at: now,
+    });
+  }
 }
 
 export async function deleteWord(id: string): Promise<void> {
   const db = await getDb();
   await db.runAsync(`DELETE FROM words WHERE id = ?;`, [id]);
+  void deleteWordFromRemote(id);
 }
 
 export async function getWordsForDeckIds(deckIds: string[]): Promise<WordWithReview[]> {
